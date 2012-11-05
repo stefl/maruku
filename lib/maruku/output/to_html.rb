@@ -817,14 +817,18 @@ If true, raw HTML is discarded from the output.
 			# copies the @children array (FIXME is it deep?)
 			elements =  root.children.to_a 
 		else # invalid
-			# Creates red box with offending HTML
-			tell_user "Wrapping bad html in a PRE with class 'markdown-html-error'\n"+
-				raw_html.gsub(/^/, '|')
-            pre = Nokogiri::XML::Element.new('pre', d)
-			pre['style'] = 'border: solid 3px red; background-color: pink'
-			pre['class'] = 'markdown-html-error'
-            pre << Nokogiri::XML::Text.new("Nokogiri could not parse this XML/HTML: \n#{raw_html}", d)
-			return pre
+			if get_setting(:ignore_invalid_html)
+				raw_html
+			else
+				# Creates red box with offending HTML
+				tell_user "Wrapping bad html in a PRE with class 'markdown-html-error'\n"+
+					raw_html.gsub(/^/, '|')
+	            pre = Nokogiri::XML::Element.new('pre', d)
+				pre['style'] = 'border: solid 3px red; background-color: pink'
+				pre['class'] = 'markdown-html-error'
+	            pre << Nokogiri::XML::Text.new("Nokogiri could not parse this XML/HTML: \n#{raw_html}", d)
+				pre
+			end
 		end
 	end
 
